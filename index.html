@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Supabase Users Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, Roboto, sans-serif; padding: 24px; }
+    li { margin-bottom: 8px; }
+    #error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Users (Supabase)</h1>
+
+  <div>
+    <button id="refreshBtn">Refresh</button>
+  </div>
+
+  <p id="status"></p>
+  <ul id="users"></ul>
+  <p id="error"></p>
+
+  <!-- Supabase JS via CDN (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Replace with your project values (from Supabase dashboard → API)
+    const SUPABASE_URL = "https://pdhxgfxwhlmoryksecwy.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkaHhnZnh3aGxtb3J5a3NlY3d5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODg2MDgsImV4cCI6MjA3MzE2NDYwOH0.zniiChPm6xhGmVONODQICOGfnBHEWcPAXbdHl7iOIAQ";
+
+    // UMD exposes `supabase` global object; extract createClient
+    const { createClient } = supabase;
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const statusEl = document.getElementById('status');
+    const usersEl = document.getElementById('users');
+    const errorEl = document.getElementById('error');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    async function loadUsers(page = 0, pageSize = 50) {
+      statusEl.textContent = 'Loading...';
+      errorEl.textContent = '';
+
+      try {
+        // Basic fetch: select all columns. By default Supabase returns up to 1000 rows.
+        // Use .range(start, end) for pagination (here: page * pageSize .. page*pageSize + pageSize - 1).
+        const start = page * pageSize;
+        const end = start + pageSize - 1;
+
+        const { data, error, count } = await client
+          .from('users')
+          .select('*', { count: 'exact' })
+          .order('id', { ascending: true })
+          .range(start, end); // pagination
+
+        if (error) {
+          throw error;
+        }
+
+        usersEl.innerHTML = '';
+        if (!data || data.length === 0) {
+          usersEl.innerHTML = '<li>No users found</li>';
+        } else {
+          data.forEach(u => {
+            const li = document.createElement('li');
+            li.textContent = `${u.name} (age ${u.age ?? '—'})`;
+            usersEl.appendChild(li);
+          });
+        }
+
+        statusEl.textContent = `Showing ${start + 1}–${Math.min(end + 1, (count ?? data.length))} of ${count ?? data.length}`;
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = 'Error loading users: ' + (err.message || err);
+        statusEl.textContent = '';
+      }
+    }
+
+    // initial load
+    loadUsers();
+
+    refreshBtn.addEventListener('click', () => loadUsers());
+  </script>
+</body>
+</html>
