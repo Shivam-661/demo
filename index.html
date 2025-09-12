@@ -63,7 +63,7 @@
         } else {
           data.forEach(u => {
             const li = document.createElement('li');
-            li.textContent = `${u.name} (age ${u.age ?? '—'})`;
+            li.textContent = `${u.a} (age ${u.b ?? '—'})`;
             usersEl.appendChild(li);
           });
         }
