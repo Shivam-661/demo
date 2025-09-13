@@ -34,7 +34,7 @@
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'com.shivamsoni12799.swarnsathi2:/oauth2redirect' // must match Supabase + Google
+        redirectTo: 'https://shivam-661.github.io/demo/' // must match Supabase + Google
       }
     })
     if (error) console.error(error)
