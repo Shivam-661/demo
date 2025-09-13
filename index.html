@@ -17,7 +17,7 @@
     <button id="refreshBtn">Refresh</button>
   </div>
 
-  <!-- <p id="status"></p> -->
+  <p id="status"></p>
   <ul id="users"></ul>
   <p id="error"></p>
 
@@ -43,14 +43,14 @@
   // Check session on load
   supabase.auth.getSession().then(({ data }) => {
     if (data.session) {
-      document.getElementById("status").innerText = 
+      document.getElementById("status2").innerText = 
         `Signed in as ${data.session.user.email}`
     }
   })
 </script>
 
 <button id="loginBtn">Sign in with Google</button>
-<div id="status">Not signed in</div>
+<div id="status2">Not signed in</div>
 
 
   <!-- Supabase JS via CDN (UMD) -->
