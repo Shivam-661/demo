@@ -21,6 +21,38 @@
   <ul id="users"></ul>
   <p id="error"></p>
 
+
+  <script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+  const supabaseUrl = 'https://pdhxgfxwhlmoryksecwy.supabase.co'
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkaHhnZnh3aGxtb3J5a3NlY3d5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODg2MDgsImV4cCI6MjA3MzE2NDYwOH0.zniiChPm6xhGmVONODQICOGfnBHEWcPAXbdHl7iOIAQ'
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+  // Button handler
+  document.getElementById("loginBtn").addEventListener("click", async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://<your-username>.github.io/<your-repo>/' // must match Supabase + Google
+      }
+    })
+    if (error) console.error(error)
+  })
+
+  // Check session on load
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      document.getElementById("status").innerText = 
+        `Signed in as ${data.session.user.email}`
+    }
+  })
+</script>
+
+<button id="loginBtn">Sign in with Google</button>
+<div id="status">Not signed in</div>
+
+
   <!-- Supabase JS via CDN (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
